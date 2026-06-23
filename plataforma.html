@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Only Love</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  :root {
+    --color-primary: #8A142C;
+    --color-primary-light: #F7E6EA;
+    --color-success: #1D9E75;
+    --color-success-light: #E1F5EE;
+    --color-info: #378ADD;
+    --color-info-light: #E6F1FB;
+    --color-bg: #F5F5F5;
+    --color-surface: #FFFFFF;
+    --color-surface2: #F8F8F8;
+    --color-border: rgba(0,0,0,0.12);
+    --color-border2: rgba(0,0,0,0.22);
+    --color-text: #1A1A1A;
+    --color-text2: #6B6B6B;
+    --color-text3: #AAAAAA;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); background: var(--color-bg); min-height: 100vh; display: flex; justify-content: center; }
+  .app { width: 100%; max-width: 430px; background: var(--color-surface); min-height: 100vh; position: relative; box-shadow: 0 0 40px rgba(0,0,0,0.1); }
+  .screen { display: none; flex-direction: column; min-height: 100vh; }
+  .screen.active { display: flex; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 0.5px solid var(--color-border); background: var(--color-surface); position: sticky; top: 0; z-index: 10; }
+  .topbar h2 { font-size: 17px; font-weight: 600; color: var(--color-text); }
+  .body { flex: 1; overflow-y: auto; padding: 16px; -webkit-overflow-scrolling: touch; }
+  .bottomnav { display: flex; border-top: 0.5px solid var(--color-border); background: var(--color-surface); position: sticky; bottom: 0; }
+  .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 4px; border: none; background: none; cursor: pointer; font-size: 10px; color: var(--color-text3); transition: color 0.15s; font-family: var(--font); }
+  .nav-btn i { font-size: 22px; }
+  .nav-btn.active { color: var(--color-primary); }
+  .btn { width: 100%; padding: 13px; border-radius: var(--radius-md); border: none; cursor: pointer; font-size: 15px; font-weight: 600; margin-bottom: 10px; transition: opacity 0.2s, transform 0.1s; font-family: var(--font); }
+  .btn:hover { opacity: 0.88; }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary { background: var(--color-primary); color: #fff; }
+  .btn-outline { background: none; border: 0.5px solid var(--color-border2); color: var(--color-text); }
+  .btn-ghost { background: none; border: none; color: var(--color-primary); font-size: 14px; cursor: pointer; padding: 8px; font-family: var(--font); }
+  .icon-btn { background: none; border: none; cursor: pointer; padding: 8px; color: var(--color-text2); font-size: 22px; border-radius: var(--radius-sm); display: flex; align-items: center; font-family: var(--font); }
+  .icon-btn:hover { background: var(--color-surface2); }
+  label { font-size: 13px; color: var(--color-text2); margin-bottom: 5px; display: block; font-weight: 500; }
+  input, select, textarea { width: 100%; padding: 11px 13px; border: 0.5px solid var(--color-border2); border-radius: var(--radius-sm); background: var(--color-surface); color: var(--color-text); font-size: 14px; font-family: var(--font); outline: none; margin-bottom: 13px; transition: border-color 0.2s; }
+  input:focus, select:focus, textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(138,20,44,0.12); }
+  textarea { resize: none; height: 82px; }
+  .chip-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .chip { padding: 7px 15px; border-radius: 20px; border: 0.5px solid var(--color-border2); background: var(--color-surface); color: var(--color-text2); font-size: 13px; cursor: pointer; transition: all 0.15s; font-family: var(--font); }
+  .chip.selected { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+  .card { background: var(--color-surface); border: 0.5px solid var(--color-border); border-radius: var(--radius-lg); padding: 14px; margin-bottom: 10px; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .badge-danger { background: var(--color-primary-light); color: #5C0E1F; }
+  .avatar { border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .progress-bar { height: 4px; background: var(--color-surface2); border-radius: 2px; margin-bottom: 18px; }
+  .progress-fill { height: 100%; background: var(--color-primary); border-radius: 2px; transition: width 0.3s; }
+  .step-label { font-size: 12px; color: var(--color-text2); margin-bottom: 18px; }
+  .divider { display: flex; align-items: center; gap: 10px; margin: 16px 0; color: var(--color-text3); font-size: 13px; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 0.5px; background: var(--color-border); }
+  .section-title { font-size: 12px; font-weight: 700; color: var(--color-text2); text-transform: uppercase; letter-spacing: 0.6px; margin: 18px 0 10px; }
+  .hero-logo { text-align: center; padding: 60px 0 24px; }
+  .logo-icon { width: 76px; height: 76px; background: var(--color-primary); border-radius: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+  .logo-icon i { color: #fff; font-size: 38px; }
+  .hero-logo h1 { font-size: 30px; font-weight: 700; color: var(--color-text); }
+  .hero-logo p { font-size: 14px; color: var(--color-text2); margin-top: 5px; }
+  /* Stories */
+  .story-row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 14px; scrollbar-width: none; }
+  .story-row::-webkit-scrollbar { display: none; }
+  .story-bubble { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; flex-shrink: 0; }
+  .story-ring { width: 62px; height: 62px; border-radius: 50%; border: 2.5px solid var(--color-primary); padding: 2px; }
+  .story-ring .inner { width: 100%; height: 100%; border-radius: 50%; background: var(--color-surface2); display: flex; align-items: center; justify-content: center; font-size: 26px; }
+  .story-name { font-size: 11px; color: var(--color-text2); max-width: 62px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* Swipe */
+  .swipe-card { border-radius: var(--radius-xl); overflow: hidden; border: 0.5px solid var(--color-border); margin-bottom: 14px; }
+  .swipe-photo { height: 270px; display: flex; align-items: center; justify-content: center; font-size: 96px; background: var(--color-surface2); }
+  .swipe-info { padding: 14px; }
+  .swipe-actions { display: flex; justify-content: center; gap: 20px; padding: 6px 0 4px; }
+  .action-btn { width: 60px; height: 60px; border-radius: 50%; border: 0.5px solid var(--color-border); background: var(--color-surface); font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.15s; }
+  .action-btn:hover { transform: scale(1.1); background: var(--color-surface2); }
+  /* Matches */
+  .match-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .match-tile { border-radius: var(--radius-md); overflow: hidden; border: 0.5px solid var(--color-border); cursor: pointer; }
+  .match-tile-photo { height: 104px; display: flex; align-items: center; justify-content: center; font-size: 46px; background: var(--color-surface2); }
+  .match-tile-name { font-size: 12px; font-weight: 600; padding: 6px 8px; color: var(--color-text); }
+  /* Chat */
+  .chat-list-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--color-border); cursor: pointer; }
+  .chat-bubble { max-width: 74%; padding: 10px 14px; border-radius: 18px; font-size: 14px; margin-bottom: 8px; line-height: 1.5; }
+  .chat-bubble.sent { background: var(--color-primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+  .chat-bubble.recv { background: var(--color-surface2); color: var(--color-text); align-self: flex-start; border-bottom-left-radius: 4px; }
+  .chat-input-bar { display: flex; gap: 8px; padding: 12px 16px; border-top: 0.5px solid var(--color-border); background: var(--color-surface); position: sticky; bottom: 0; }
+  .chat-input-bar input { margin: 0; flex: 1; }
+  .send-btn { background: var(--color-primary); border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 18px; flex-shrink: 0; }
+  /* Perfil */
+  .profile-hero { text-align: center; padding: 24px 0 16px; }
+  .big-avatar { width: 92px; height: 92px; border-radius: 50%; font-size: 46px; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; background: var(--color-surface2); }
+  .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+  .stat-box { background: var(--color-surface2); border-radius: var(--radius-sm); padding: 12px; text-align: center; }
+  .stat-box .num { font-size: 22px; font-weight: 700; color: var(--color-text); }
+  .stat-box .lbl { font-size: 11px; color: var(--color-text2); margin-top: 2px; }
+  /* Notificaciones */
+  .notif-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--color-border); }
+  .notif-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--color-primary); margin-top: 6px; flex-shrink: 0; }
+  .notif-dot.read { background: var(--color-border2); }
+  /* Filtros */
+  .filter-range { margin-bottom: 16px; }
+  .filter-range label { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  input[type="range"] { -webkit-appearance: none; width: 100%; height: 4px; border-radius: 2px; background: var(--color-border2); outline: none; margin-bottom: 0; border: none; padding: 0; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--color-primary); cursor: pointer; }
+  .otp-digit { margin-bottom: 0; padding-left: 0; padding-right: 0; }
+  /* Mapa */
+  .map-placeholder { background: var(--color-surface2); border-radius: var(--radius-lg); height: 200px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; color: var(--color-text2); margin-bottom: 14px; border: 0.5px solid var(--color-border); }
+  .nearby-item { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 0.5px solid var(--color-border); }
+  /* Premium */
+  .premium-card { border-radius: var(--radius-xl); background: var(--color-primary); color: #fff; padding: 22px; margin-bottom: 16px; text-align: center; }
+  .plan-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .plan-box { border: 0.5px solid var(--color-border2); border-radius: var(--radius-lg); padding: 16px; text-align: center; cursor: pointer; transition: border-color 0.15s; }
+  .plan-box.selected { border-color: var(--color-primary); border-width: 2px; }
+  .plan-box .price { font-size: 24px; font-weight: 700; color: var(--color-text); }
+  .plan-box .period { font-size: 12px; color: var(--color-text2); }
+  /* Settings */
+  .setting-item { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 0.5px solid var(--color-border); cursor: pointer; }
+  .setting-label { font-size: 15px; color: var(--color-text); }
+  .setting-sub { font-size: 12px; color: var(--color-text2); margin-top: 2px; }
+  .toggle { width: 46px; height: 26px; background: var(--color-border2); border-radius: 13px; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+  .toggle.on { background: var(--color-primary); }
+  .toggle::after { content: ''; width: 22px; height: 22px; background: #fff; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: left 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+  .toggle.on::after { left: 22px; }
+  /* Story viewer */
+  .story-viewer { position: fixed; inset: 0; background: #111; z-index: 999; display: none; flex-direction: column; }
+  .story-viewer.show { display: flex; }
+  .story-viewer-top { display: flex; align-items: center; padding: 14px 16px; gap: 10px; }
+  .story-viewer-top button { background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; }
+  .story-content { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 120px; }
+  /* Estado vacío */
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--color-text2); }
+  .empty-state i { font-size: 56px; color: var(--color-text3); margin-bottom: 16px; display: block; }
+  .empty-state h3 { font-size: 18px; font-weight: 600; color: var(--color-text); margin-bottom: 8px; }
+  .empty-state p { font-size: 14px; line-height: 1.6; }
+  .recover-icon { text-align: center; padding: 30px 0 16px; color: var(--color-primary); font-size: 58px; }
+  @media (min-width: 600px) {
+    body { align-items: center; padding: 20px; }
+    .app { border-radius: 32px; }
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+<div class="screen" id="s-home">
+  <div class="topbar">
+    <button class="icon-btn" onclick="go('s-notifications')"><i class="ti ti-bell"></i></button>
+    <h2>Only Love</h2>
+    <button class="icon-btn" onclick="go('s-filters')"><i class="ti ti-adjustments-horizontal"></i></button>
+  </div>
+  <div class="body" style="padding-top:10px">
+    <!-- Stories: se llenarán desde tu base de datos -->
+    <div class="story-row" id="story-row">
+      <div class="empty-state" style="padding:10px 0;width:100%">
+        <p style="font-size:13px;color:var(--color-text3)">Las historias de otros usuarios aparecerán aquí</p>
+      </div>
+    </div>
+    <!-- Tarjetas swipe: se llenarán desde tu base de datos -->
+    <div id="swipe-cards">
+      <div class="empty-state">
+        <i class="ti ti-users"></i>
+        <h3>Sin perfiles por ahora</h3>
+        <p>Cuando otros usuarios se registren,<br>sus perfiles aparecerán aquí.</p>
+      </div>
+    </div>
+  </div>
+  <div class="bottomnav">
+    <button class="nav-btn active" onclick="navTo('s-home',this)"><i class="ti ti-flame"></i><span>Inicio</span></button>
+    <button class="nav-btn" onclick="navTo('s-matches',this)"><i class="ti ti-heart"></i><span>Matches</span></button>
+    <button class="nav-btn" onclick="navTo('s-chat',this)"><i class="ti ti-message-circle"></i><span>Mensajes</span></button>
+    <button class="nav-btn" onclick="navTo('s-map',this)"><i class="ti ti-map"></i><span>Mapa</span></button>
+    <button class="nav-btn" onclick="navTo('s-profile',this)"><i class="ti ti-user"></i><span>Perfil</span></button>
+  </div>
+</div>
+
+<!-- MÓDULO 11: MATCHES -->
+<div class="screen" id="s-matches">
+  <div class="topbar"><div style="width:40px"></div><h2>Mis matches</h2><div style="width:40px"></div></div>
+  <div class="body">
+    <p class="section-title">Nuevos matches</p>
+    <div class="match-grid" id="matches-grid">
+      <!-- Se llenará desde tu base de datos -->
+    </div>
+    <div class="empty-state" id="matches-empty">
+      <i class="ti ti-heart"></i>
+      <h3>Aún no tienes matches</h3>
+      <p>Cuando alguien también te dé like,<br>aparecerá aquí.</p>
+    </div>
+    <p class="section-title">Conversaciones</p>
+    <div id="chats-list">
+      <!-- Se llenará desde tu base de datos -->
+    </div>
+    <div class="empty-state" id="chats-empty" style="padding:30px 20px">
+      <i class="ti ti-message-circle"></i>
+      <h3>Sin conversaciones</h3>
+      <p>Cuando tengas un match y empiecen a hablar, aparecerá aquí.</p>
+    </div>
+  </div>
+  <div class="bottomnav">
+    <button class="nav-btn" onclick="navTo('s-home',this)"><i class="ti ti-flame"></i><span>Inicio</span></button>
+    <button class="nav-btn active" onclick="navTo('s-matches',this)"><i class="ti ti-heart"></i><span>Matches</span></button>
+    <button class="nav-btn" onclick="navTo('s-chat',this)"><i class="ti ti-message-circle"></i><span>Mensajes</span></button>
+    <button class="nav-btn" onclick="navTo('s-map',this)"><i class="ti ti-map"></i><span>Mapa</span></button>
+    <button class="nav-btn" onclick="navTo('s-profile',this)"><i class="ti ti-user"></i><span>Perfil</span></button>
+  </div>
+</div>
+
+<!-- MÓDULO 12: LISTA DE CHATS -->
+<div class="screen" id="s-chat">
+  <div class="topbar">
+    <div style="width:40px"></div>
+    <h2>Mensajes</h2>
+    <button class="icon-btn"><i class="ti ti-search"></i></button>
+  </div>
+  <div class="body">
+    <input type="text" placeholder="Buscar conversación...">
+    <div id="chat-list-container">
+      <!-- Se llenará desde tu base de datos -->
+    </div>
+    <div class="empty-state" id="chat-list-empty">
+      <i class="ti ti-message-circle"></i>
+      <h3>Sin mensajes aún</h3>
+      <p>Haz match con alguien y empieza<br>una conversación.</p>
+    </div>
+  </div>
+  <div class="bottomnav">
+    <button class="nav-btn" onclick="navTo('s-home',this)"><i class="ti ti-flame"></i><span>Inicio</span></button>
+    <button class="nav-btn" onclick="navTo('s-matches',this)"><i class="ti ti-heart"></i><span>Matches</span></button>
+    <button class="nav-btn active" onclick="navTo('s-chat',this)"><i class="ti ti-message-circle"></i><span>Mensajes</span></button>
+    <button class="nav-btn" onclick="navTo('s-map',this)"><i class="ti ti-map"></i><span>Mapa</span></button>
+    <button class="nav-btn" onclick="navTo('s-profile',this)"><i class="ti ti-user"></i><span>Perfil</span></button>
+  </div>
+</div>
+
+<!-- MÓDULO 13: CHAT INDIVIDUAL -->
+<div class="screen" id="s-chatroom">
+  <div class="topbar">
+    <button class="icon-btn" onclick="go('s-chat')"><i class="ti ti-arrow-left"></i></button>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="avatar" id="chat-avatar" style="width:36px;height:36px;font-size:20px;background:var(--color-surface2)">👤</div>
+      <div>
+        <div style="font-weight:600;font-size:15px" id="chat-name">Usuario</div>
+        <div style="font-size:12px;color:var(--color-success)">En línea</div>
+      </div>
+    </div>
+    <button class="icon-btn"><i class="ti ti-dots-vertical"></i></button>
+  </div>
+  <div class="body" id="chat-messages" style="display:flex;flex-direction:column">
+    <!-- Los mensajes se cargarán desde tu base de datos -->
+    <div style="text-align:center;padding:30px 0;color:var(--color-text3);font-size:13px">
+      Es tu primer mensaje con esta persona. ¡Saluda! 👋
+    </div>
+  </div>
+  <div class="chat-input-bar">
+    <input type="text" id="msg-input" placeholder="Escribe un mensaje...">
+    <button class="send-btn" onclick="sendMsg()"><i class="ti ti-send"></i></button>
+  </div>
+</div>
+
+<!-- MÓDULO 14: PERFIL PROPIO -->
+<div class="screen" id="s-profile">
+  <div class="topbar">
+    <div style="width:40px"></div>
+    <h2>Mi perfil</h2>
+    <button class="icon-btn" onclick="go('s-settings')"><i class="ti ti-settings"></i></button>
+  </div>
+  <div class="body">
+    <div class="profile-hero">
+      <div class="big-avatar" id="profile-avatar">👤</div>
+      <div style="font-size:22px;font-weight:700" id="profile-name">Tu nombre</div>
+      <div style="font-size:14px;color:var(--color-text2);margin-top:3px" id="profile-city">Tu ciudad</div>
+      <button class="btn btn-outline" style="width:auto;padding:9px 22px;margin-top:12px" onclick="alert('Próximamente: edición de perfil')">
+        <i class="ti ti-edit"></i> Editar perfil
+      </button>
+    </div>
+    <div class="stat-row">
+      <div class="stat-box"><div class="num" id="stat-likes">0</div><div class="lbl">Likes recibidos</div></div>
+      <div class="stat-box"><div class="num" id="stat-matches">0</div><div class="lbl">Matches</div></div>
+      <div class="stat-box"><div class="num" id="stat-chats">0</div><div class="lbl">Chats activos</div></div>
+    </div>
+    <p class="section-title">Sobre mí</p>
+    <div class="card">
+      <p style="font-size:14px;color:var(--color-text2);line-height:1.7" id="profile-bio">Completa tu perfil para que otros usuarios puedan conocerte mejor.</p>
+    </div>
+    <button class="btn btn-outline" style="margin-top:10px" onclick="go('s-premium')">
+      <i class="ti ti-crown"></i> Ver planes Premium
+    </button>
+  </div>
+  <div class="bottomnav">
+    <button class="nav-btn" onclick="navTo('s-home',this)"><i class="ti ti-flame"></i><span>Inicio</span></button>
+    <button class="nav-btn" onclick="navTo('s-matches',this)"><i class="ti ti-heart"></i><span>Matches</span></button>
+    <button class="nav-btn" onclick="navTo('s-chat',this)"><i class="ti ti-message-circle"></i><span>Mensajes</span></button>
+    <button class="nav-btn" onclick="navTo('s-map',this)"><i class="ti ti-map"></i><span>Mapa</span></button>
+    <button class="nav-btn active" onclick="navTo('s-profile',this)"><i class="ti ti-user"></i><span>Perfil</span></button>
+  </div>
+</div>
+
+<!-- MÓDULO 15: NOTIFICACIONES -->
+<div class="screen" id="s-notifications">
+  <div class="topbar">
+    <button class="icon-btn" onclick="go('s-home')"><i class="ti ti-arrow-left"></i></button>
+    <h2>Notificaciones</h2>
+    <button class="icon-btn"><i class="ti ti-checks"></i></button>
+  </div>
+  <div class="body">
+    <div id="notif-list">
+      <!-- Se llenará desde tu base de datos -->
+    </div>
+    <div class="empty-state" id="notif-empty">
+      <i class="ti ti-bell"></i>
+      <h3>Sin notificaciones</h3>
+      <p>Aquí verás likes, matches<br>y mensajes nuevos.</p>
+    </div>
+  </div>
+</div>
+
+<!-- MÓDULO 16: FILTROS -->
+<div class="screen" id="s-filters">
+  <div class="topbar">
+    <button class="icon-btn" onclick="go('s-home')"><i class="ti ti-x"></i></button>
+    <h2>Filtros de búsqueda</h2>
+    <button style="background:none;border:none;color:var(--color-primary);font-size:15px;font-weight:600;cursor:pointer;font-family:var(--font)" onclick="go('s-home')">Aplicar</button>
+  </div>
+  <div class="body">
+    <p class="section-title">Rango de edad</p>
+    <div class="filter-range">
+      <label><span>Edad mínima</span><span style="color:var(--color-text);font-weight:700" id="age-min-val">18</span> años</label>
+      <input type="range" min="18" max="60" value="18" step="1" oninput="document.getElementById('age-min-val').textContent=this.value">
+    </div>
+    <div class="filter-range">
+      <label><span>Edad máxima</span><span style="color:var(--color-text);font-weight:700" id="age-max-val">35</span> años</label>
+      <input type="range" min="18" max="60" value="35" step="1" oninput="document.getElementById('age-max-val').textContent=this.value">
+    </div>
+    <p class="section-title">Distancia máxima</p>
+    <div class="filter-range">
+      <label><span>Distancia</span><span style="color:var(--color-text);font-weight:700" id="dist-val">25</span> km</label>
+      <input type="range" min="1" max="200" value="25" step="1" oninput="document.getElementById('dist-val').textContent=this.value">
+    </div>
+    <p class="section-title">Me interesa conocer</p>
+    <div class="chip-group">
+      <span class="chip selected" onclick="toggleChip(this)">Mujeres</span>
+      <span class="chip" onclick="toggleChip(this)">Hombres</span>
+      <span class="chip" onclick="toggleChip(this)">Todos</span>
+    </div>
+    <p class="section-title">Nivel educativo</p>
+    <div class="chip-group">
+      <span class="chip" onclick="toggleChip(this)">Secundaria</span>
+      <span class="chip" onclick="toggleChip(this)">Universitario</span>
+      <span class="chip selected" onclick="toggleChip(this)">Cualquiera</span>
+    </div>
+    <p class="section-title">Propósito</p>
+    <div class="chip-group">
+      <span class="chip selected" onclick="toggleChip(this)">Relación seria</span>
+      <span class="chip" onclick="toggleChip(this)">Amistad</span>
+      <span class="chip" onclick="toggleChip(this)">Casual</span>
+    </div>
+    <button class="btn btn-primary" onclick="go('s-home')">Aplicar filtros</button>
+    <button class="btn btn-outline">Restablecer todo</button>
+  </div>
+</div>
+
+<!-- MÓDULO 17: MAPA -->
+<div class="screen" id="s-map">
+  <div class="topbar">
+    <div style="width:40px"></div>
+    <h2>Personas cercanas</h2>
+    <button class="icon-btn" onclick="go('s-filters')"><i class="ti ti-adjustments-horizontal"></i></button>
+  </div>
+  <div class="body">
+    <div class="map-placeholder">
+      <i class="ti ti-map-2" style="font-size:44px"></i>
+      <p style="font-size:15px;font-weight:600">Mapa interactivo</p>
+      <p style="font-size:12px;color:var(--color-text3)">Conecta Google Maps o Leaflet.js aquí</p>
+    </div>
+    <p class="section-title">Cerca de ti</p>
+    <div id="nearby-list">
+      <!-- Se llenará desde tu base de datos con usuarios reales -->
+    </div>
+    <div class="empty-state" id="nearby-empty">
+      <i class="ti ti-map-pin"></i>
+      <h3>Nadie cerca aún</h3>
+      <p>Cuando otros usuarios estén cerca,<br>aparecerán aquí.</p>
+    </div>
+  </div>
+  <div class="bottomnav">
+    <button class="nav-btn" onclick="navTo('s-home',this)"><i class="ti ti-flame"></i><span>Inicio</span></button>
+    <button class="nav-btn" onclick="navTo('s-matches',this)"><i class="ti ti-heart"></i><span>Matches</span></button>
+    <button class="nav-btn" onclick="navTo('s-chat',this)"><i class="ti ti-message-circle"></i><span>Mensajes</span></button>
+    <button class="nav-btn active" onclick="navTo('s-map',this)"><i class="ti ti-map"></i><span>Mapa</span></button>
+    <button class="nav-btn" onclick="navTo('s-profile',this)"><i class="ti ti-user"></i><span>Perfil</span></button>
+  </div>
+</div>
+
+<!-- MÓDULO 18: PREMIUM -->
+<div class="screen" id="s-premium">
+  <div class="topbar">
+    <button class="icon-btn" onclick="go('s-profile')"><i class="ti ti-arrow-left"></i></button>
+    <h2>Only Love Premium</h2>
+    <div style="width:40px"></div>
+  </div>
+  <div class="body">
+    <div class="premium-card">
+      <i class="ti ti-crown" style="font-size:40px;margin-bottom:10px"></i>
+      <h3 style="font-size:22px;font-weight:700;margin-bottom:8px">Desbloquea todo</h3>
+      <p style="font-size:13px;opacity:0.88;margin-bottom:18px;line-height:1.6">Ve quién te dio like, likes ilimitados, super likes y mucho más.</p>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <span style="background:rgba(255,255,255,0.2);border-radius:20px;padding:5px 14px;font-size:12px">Likes ilimitados</span>
+        <span style="background:rgba(255,255,255,0.2);border-radius:20px;padding:5px 14px;font-size:12px">Ver quién te gustó</span>
+        <span style="background:rgba(255,255,255,0.2);border-radius:20px;padding:5px 14px;font-size:12px">Sin anuncios</span>
+      </div>
+    </div>
+    <p class="section-title">Elige tu plan</p>
+    <div class="plan-row">
+      <div class="plan-box selected" onclick="selectPlan(this)">
+        <div style="font-size:11px;color:var(--color-primary);font-weight:700;margin-bottom:6px">MÁS POPULAR</div>
+        <div class="price">$9.99</div>
+        <div class="period">por mes</div>
+      </div>
+      <div class="plan-box" onclick="selectPlan(this)">
+        <div style="font-size:11px;color:var(--color-success);font-weight:700;margin-bottom:6px">AHORRA 40%</div>
+        <div class="price">$5.99</div>
+        <div class="period">por mes · anual</div>
+      </div>
+    </div>
+    <button class="btn btn-primary">Empezar prueba gratis 7 días</button>
+    <button class="btn btn-outline">Ver comparativa de planes</button>
+    <p style="text-align:center;font-size:11px;color:var(--color-text3);margin-top:10px;line-height:1.7">Cancela cuando quieras. Sin compromiso.</p>
+  </div>
+</div>
+
+<!-- MÓDULO 19: SETTINGS -->
+<div class="screen" id="s-settings">
+  <div class="topbar">
+    <button class="icon-btn" onclick="go('s-profile')"><i class="ti ti-arrow-left"></i></button>
+    <h2>Configuración</h2>
+    <div style="width:40px"></div>
+  </div>
+  <div class="body">
+    <p class="section-title">Cuenta</p>
+    <div class="setting-item" onclick="alert('Próximamente: edición de perfil')">
+      <div><div class="setting-label">Editar perfil</div><div class="setting-sub">Foto, nombre, descripción</div></div>
+      <i class="ti ti-chevron-right" style="color:var(--color-text3)"></i>
+    </div>
+    <div class="setting-item" onclick="alert('Próximamente: cambio de contraseña')">
+      <div><div class="setting-label">Cambiar contraseña</div></div>
+      <i class="ti ti-chevron-right" style="color:var(--color-text3)"></i>
+    </div>
+    <div class="setting-item" onclick="go('s-notifications')">
+      <div><div class="setting-label">Notificaciones</div><div class="setting-sub">Push, email, SMS</div></div>
+      <i class="ti ti-chevron-right" style="color:var(--color-text3)"></i>
+    </div>
+    <p class="section-title">Privacidad</p>
+    <div class="setting-item">
+      <div><div class="setting-label">Mostrar distancia</div><div class="setting-sub">Visible en tu perfil</div></div>
+      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+    </div>
+    <div class="setting-item">
+      <div><div class="setting-label">Mostrar edad</div></div>
+      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+    </div>
+    <div class="setting-item">
+      <div><div class="setting-label">Modo incógnito</div><div class="setting-sub">Solo ves perfiles, no te ven</div></div>
+      <div class="toggle" onclick="this.classList.toggle('on')"></div>
+    </div>
+    <p class="section-title">Preferencias</p>
+    <div class="setting-item">
+      <div><div class="setting-label">Notificaciones push</div></div>
+      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+    </div>
+    <div class="setting-item">
+      <div><div class="setting-label">Sonidos</div></div>
+      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+    </div>
+    <div class="setting-item">
+      <div><div class="setting-label">Idioma</div><div class="setting-sub">Español</div></div>
+      <i class="ti ti-chevron-right" style="color:var(--color-text3)"></i>
+    </div>
+    <p class="section-title">Soporte</p>
+    <div class="setting-item">
+      <div><div class="setting-label">Ayuda y soporte</div></div>
+      <i class="ti ti-chevron-right" style="color:var(--color-text3)"></i>
+    </div>
+    <div class="setting-item">
+      <div><div class="setting-label">Reportar un problema</div></div>
+      <i class="ti ti-chevron-right" style="color:var(--color-text3)"></i>
+    </div>
+    <p class="section-title">Sesión</p>
+    <div class="setting-item" onclick="logout()">
+      <div><div class="setting-label" style="color:var(--color-primary)">Cerrar sesión</div></div>
+      <i class="ti ti-logout" style="color:var(--color-primary)"></i>
+    </div>
+    <div class="setting-item">
+      <div><div class="setting-label" style="color:#A32D2D">Eliminar cuenta</div></div>
+      <i class="ti ti-trash" style="color:#A32D2D"></i>
+    </div>
+  </div>
+</div>
+
+<!-- VISOR DE STORIES -->
+<div class="story-viewer" id="story-viewer">
+  <div class="story-viewer-top">
+    <button onclick="closeStory()"><i class="ti ti-x"></i></button>
+    <div style="flex:1;background:rgba(255,255,255,0.25);height:3px;border-radius:2px;margin:0 10px">
+      <div id="story-progress" style="height:100%;background:#fff;width:0%;border-radius:2px;transition:width 3s linear"></div>
+    </div>
+    <span id="story-viewer-name" style="color:#fff;font-size:14px;font-weight:600"></span>
+  </div>
+  <div class="story-content" id="story-content"></div>
+  <div style="padding:20px;color:rgba(255,255,255,0.88);font-size:14px;text-align:center" id="story-msg"></div>
+</div>
+
+<script>
+  const BACKEND_URL = '';
+
+  /* ============================================================
+     PROTECCIÓN DE SESIÓN
+     Esto es una capa EXTRA en el navegador. La protección real
+     ocurre en el servidor (server.js), que solo entrega este
+     archivo plataforma.html si hay una sesión válida. Esta verificación
+     aquí es para casos donde la sesión expiró mientras la pestaña
+     seguía abierta.
+  ============================================================ */
+  (async function checkSession() {
+    try {
+      const resp = await fetch(`${BACKEND_URL}/api/session`, { credentials: 'include' });
+      const data = await resp.json();
+      if (!data.authenticated) {
+        window.location.href = '/auth.html';
+      }
+    } catch (err) {
+      console.error('No se pudo verificar la sesión:', err);
+      window.location.href = '/auth.html';
+    }
+  })();
+
+  async function logout() {
+    try {
+      await fetch(`${BACKEND_URL}/api/logout`, { method: 'POST', credentials: 'include' });
+    } catch (err) {
+      console.error('Error al cerrar sesión:', err);
+    }
+    window.location.href = '/auth.html';
+  }
+
+  /* ============================================================
+     NAVEGACIÓN
+     go('id')      → va a esa pantalla
+     navTo('id', btn) → va y resalta el botón del nav inferior
+  ============================================================ */
+  function go(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const t = document.getElementById(id);
+    if (t) { t.classList.add('active'); t.scrollTop = 0; }
+  }
+
+  function navTo(id, btn) {
+    go(id);
+    document.querySelectorAll('.bottomnav .nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.bottomnav .nav-btn').forEach(b => {
+      if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(id)) b.classList.add('active');
+    });
+  }
+
+  /* ============================================================
+     UTILIDADES DE FORMULARIO
+  ============================================================ */
+  function toggleChip(el) { el.classList.toggle('selected'); }
+  function selectPlan(el) {
+    document.querySelectorAll('.plan-box').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  /* ============================================================
+     CHAT — enviar mensaje
+     TODO: Conecta esto a tu backend (WebSocket, Firebase, etc.)
+  ============================================================ */
+  function openChatWith(name, avatar) {
+    document.getElementById('chat-name').textContent = name;
+    document.getElementById('chat-avatar').textContent = avatar || '👤';
+    const msgs = document.getElementById('chat-messages');
+    msgs.innerHTML = '<div style="text-align:center;padding:30px 0;color:var(--color-text3);font-size:13px">Inicio de la conversación con ' + name + ' 💬</div>';
+    go('s-chatroom');
+  }
+
+  function sendMsg() {
+    const inp = document.getElementById('msg-input');
+    const text = inp.value.trim();
+    if (!text) return;
+    const msgs = document.getElementById('chat-messages');
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble sent';
+    bubble.textContent = text;
+    msgs.appendChild(bubble);
+    msgs.scrollTop = msgs.scrollHeight;
+    inp.value = '';
+    // TODO: Aquí conectas con tu backend para enviar el mensaje real
+  }
+
+  document.getElementById('msg-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') sendMsg();
+  });
+
+  /* ============================================================
+     STORIES — visor
+  ============================================================ */
+  let storyTimer = null;
+
+  function openStory(name, content, bg) {
+    const viewer = document.getElementById('story-viewer');
+    document.getElementById('story-content').textContent = content || '';
+    document.getElementById('story-content').style.background = bg || '#222';
+    document.getElementById('story-viewer-name').textContent = name;
+    document.getElementById('story-msg').textContent = 'Historia de ' + name;
+    document.getElementById('story-progress').style.width = '0%';
+    viewer.classList.add('show');
+    clearTimeout(storyTimer);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      document.getElementById('story-progress').style.width = '100%';
+    }));
+    storyTimer = setTimeout(closeStory, 3100);
+  }
+
+  function closeStory() {
+    document.getElementById('story-viewer').classList.remove('show');
+    clearTimeout(storyTimer);
+  }
+
+  /* ============================================================
+     SWIPE — función de deslizar
+     TODO: Conecta esto a tu API para registrar likes/dislikes
+  ============================================================ */
+  function doSwipe(dir) {
+    console.log('Swipe:', dir);
+  }
+
+  /* ============================================================
+     INICIALIZACIÓN
+  ============================================================ */
+  function initApp() {
+    console.log('Only Love lista. Conecta tu backend aquí.');
+  }
+
+  initApp();
+</script>
+
+
+</div>
+</body>
+</html>

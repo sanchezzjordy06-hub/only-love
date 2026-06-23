@@ -1,0 +1,18 @@
+{
+  "name": "onlylove-backend",
+  "version": "2.0.0",
+  "description": "Backend de Only Love: autenticación, sesiones y verificación de correo",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "resend": "^3.5.0"
+  }
+}
